@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Heartfelt Quest | RAKIBUL IT</title>
+    <title>If You Love Me | Share It My Inbox 💌 - RAKIBUL IT</title>
     <style>
         * {
             margin: 0;
@@ -64,7 +64,7 @@
         }
 
         h1 {
-            font-size: clamp(1.8rem, 7vw, 2.4rem);
+            font-size: clamp(1.6rem, 7vw, 2.4rem);
             font-weight: 700;
             background: linear-gradient(135deg, #fff5e6, #ffe6f0);
             background-clip: text;
@@ -151,7 +151,7 @@
             }
         }
 
-        .next-btn, .reset-btn {
+        .next-btn, .reset-btn, .share-btn {
             border: none;
             font-family: inherit;
             font-weight: bold;
@@ -161,9 +161,9 @@
             width: 85%;
             max-width: 280px;
             padding: 12px 20px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             letter-spacing: 0.5px;
-            margin-top: 1rem;
+            margin-top: 0.8rem;
         }
 
         .next-btn {
@@ -187,6 +187,32 @@
         .reset-btn:active {
             transform: scale(0.96);
             background: rgba(0, 0, 0, 0.7);
+        }
+
+        .share-btn {
+            background: linear-gradient(95deg, #f7971e, #ffd200);
+            color: #2d1b3c;
+            font-weight: bold;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+            margin-top: 12px;
+        }
+
+        .share-btn:active {
+            transform: scale(0.97);
+        }
+
+        .inbox-share-btn {
+            background: linear-gradient(95deg, #e94057, #8a2387);
+            color: white;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         /* LOVE animation */
@@ -265,6 +291,32 @@
             overflow: hidden;
         }
 
+        /* Toast notification */
+        .toast-message {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            z-index: 300;
+            animation: toastFade 2s ease forwards;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        @keyframes toastFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            15% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            85% { opacity: 1; transform: translateX(-50%) translateY(0); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+        }
+
         /* Footer - RAKIBUL IT */
         .footer {
             position: fixed;
@@ -318,10 +370,10 @@
                 padding: 0.6rem 1.2rem;
                 min-width: 95px;
             }
-            .next-btn, .reset-btn {
+            .next-btn, .reset-btn, .share-btn {
                 width: 90%;
                 padding: 10px 16px;
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             .footer {
                 font-size: 0.7rem;
@@ -349,7 +401,7 @@
 <div class="card" id="appRoot">
     <!-- PAGE 1: ARE YOU SINGLE? -->
     <div id="page1" class="active-page">
-        <h1>✨ Heart Compass ✨</h1>
+        <h1>✨ IF YOU LOVE ME ✨</h1>
         <div class="question">💖 ARE YOU SINGLE ? 💖</div>
         <div class="options">
             <label class="choice-label">
@@ -384,7 +436,11 @@
     <!-- PAGE 3: FINAL RESULT (animated / respectful) -->
     <div id="page3" class="hidden-page">
         <div id="resultContent"></div>
-        <button class="reset-btn" id="resetFromResult">⟳ Begin Again</button>
+        <div class="button-group">
+            <button class="share-btn inbox-share-btn" id="shareToInboxBtn">📨 SHARE IT MY INBOX 💌</button>
+            <button class="share-btn" id="shareResultBtn">📤 Share Anywhere</button>
+            <button class="reset-btn" id="resetFromResult">⟳ Begin Again</button>
+        </div>
     </div>
 </div>
 
@@ -392,7 +448,7 @@
 <div class="footer">
     <span class="highlight">✨ THIS PROJECT FROM RAKIBUL IT ✨</span> 
     <span class="heart-beat">❤️</span> 
-    <span style="opacity:0.9;">| spreading love & code</span>
+    <span style="opacity:0.9;">| if you love me, share it my inbox</span>
 </div>
 
 <script>
@@ -404,12 +460,113 @@
     const decideLoveBtn = document.getElementById('decideLoveBtn');
     const resetFromPage2 = document.getElementById('resetFromPage2');
     const resetFromResult = document.getElementById('resetFromResult');
+    const shareResultBtn = document.getElementById('shareResultBtn');
+    const shareToInboxBtn = document.getElementById('shareToInboxBtn');
     const singleYes = document.getElementById('singleYes');
     const singleNo = document.getElementById('singleNo');
     const loveYes = document.getElementById('loveYes');
     const loveNo = document.getElementById('loveNo');
 
-    // Helper: switch pages with smooth transition
+    // Store the current result message for sharing (dynamic)
+    let currentResultMessage = "";
+    let currentResultType = ""; // 'love' or 'respect'
+    let currentEmotionText = "";
+
+    // Helper: show toast notification
+    function showToast(message, duration = 2500) {
+        const existingToast = document.querySelector('.toast-message');
+        if(existingToast) existingToast.remove();
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            if(toast && toast.remove) toast.remove();
+        }, duration);
+    }
+
+    // Share function using Web Share API or fallback
+    function shareContent(title, text, url) {
+        if (navigator.share) {
+            navigator.share({
+                title: title,
+                text: text,
+                url: url,
+            }).catch((err) => {
+                if (err.name !== 'AbortError') {
+                    showToast("✨ Copied to clipboard! ✨");
+                    fallbackCopy(text);
+                }
+            });
+        } else {
+            fallbackCopy(text);
+            showToast("📋 Copied to clipboard! You can now paste & send to RAKIBUL's inbox 💕");
+        }
+    }
+
+    function fallbackCopy(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
+    // SPECIAL: Share to RAKIBUL's inbox (email + message)
+    function shareToInbox() {
+        if (!currentResultMessage) {
+            showToast("✨ Complete the journey first, then share your honest feeling ✨");
+            return;
+        }
+        
+        let subject = "";
+        let body = "";
+        const userFeeling = currentResultType === 'love' ? "💖 I SAID YES! I LOVE YOU 💖" : "💙 My honest decision (Respect) 💙";
+        
+        if (currentResultType === 'love') {
+            subject = "💌 Love Confession via Heart Quest 💌";
+            body = `Hello RAKIBUL IT,\n\nI took the Heart Quest and my heart said:\n\n✨✨✨ I LOVE YOU ✨✨✨\n\n${currentEmotionText}\n\nThis is my honest feeling. 💖\n\nSent from "If You Love Me Share It My Inbox" — Made with love.`;
+        } else {
+            subject = "💙 Heartfelt Respect Message 💙";
+            body = `Hello RAKIBUL IT,\n\nI completed the Heart Quest with honesty.\n\nMy decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nI always respect true feelings. 🌸\n\nSent with kindness via "If You Love Me Share It My Inbox".`;
+        }
+        
+        // Create mailto link targeting RAKIBUL's inbox
+        const recipientEmail = "rakibul@example.com"; // placeholder - you can change to real email
+        // For realistic demonstration, we use a nice mailto: 
+        // But to make it functional, we use a default address that user can edit. 
+        // According to request: "share it my inbox" - we create email intent.
+        const mailtoLink = `mailto:rakibul.it.love@inbox.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // Try to open email client
+        window.location.href = mailtoLink;
+        showToast("💌 Opening your email client... Send your love to RAKIBUL's inbox! 💌", 3000);
+        
+        // Also copy to clipboard as backup
+        fallbackCopy(body);
+        setTimeout(() => {
+            showToast("❤️ Message also copied! Paste & send if needed.", 2000);
+        }, 1500);
+    }
+
+    // Generic share handler
+    function handleShare() {
+        if (!currentResultMessage) {
+            showToast("✨ Nothing to share yet! Complete the journey first ✨");
+            return;
+        }
+        let shareText = "";
+        let shareTitle = "💖 My Heart Decision - If You Love Me 💖";
+        if (currentResultType === 'love') {
+            shareText = `💗 My heart chose LOVE! 💗\n\n✨ I LOVE YOU ✨\n\n${currentEmotionText}\n\nMade with 💕 via RAKIBUL IT's Heart Quest\n\n"If you love me, share it my inbox"`;
+        } else {
+            shareText = `💙 My honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nRespect & kindness always. 🌸\n\nCreated by RAKIBUL IT`;
+        }
+        shareContent(shareTitle, shareText, window.location.href);
+    }
+
+    // Helper: switch pages
     function showPage(pageNum) {
         [page1, page2, page3].forEach(page => {
             page.classList.remove('active-page');
@@ -423,7 +580,7 @@
         target.classList.add('active-page');
     }
 
-    // full reset to initial state
+    // full reset
     function fullReset() {
         singleYes.checked = false;
         singleNo.checked = false;
@@ -432,11 +589,12 @@
         showPage(1);
         const resultDiv = document.getElementById('resultContent');
         if (resultDiv) resultDiv.innerHTML = '';
-        // remove any floating warning leftovers
+        currentResultMessage = "";
+        currentResultType = "";
+        currentEmotionText = "";
         document.querySelectorAll('.temp-warning, .polite-no-msg, .single-warning').forEach(el => el.remove());
     }
 
-    // get single status (null if invalid)
     function getSingleStatus() {
         const yes = singleYes.checked;
         const no = singleNo.checked;
@@ -451,7 +609,7 @@
         return yes ? 'yes' : 'no';
     }
 
-    // floating hearts creator (mobile optimized)
+    // floating hearts
     function spawnFloatingHearts(containerEl, count = 16) {
         if (!containerEl) return;
         const oldHearts = containerEl.querySelectorAll('.dynamic-heart');
@@ -497,7 +655,7 @@
         setTimeout(() => sparkContainer.remove(), 2000);
     }
 
-    // I LOVE YOU animated page (full of love)
+    // LOVE page
     function renderLovePage() {
         const container = document.getElementById('resultContent');
         if (!container) return;
@@ -530,21 +688,23 @@
         loveWrapper.appendChild(floatArea);
         container.appendChild(loveWrapper);
 
-        // spawn multiple heart bursts
         spawnFloatingHearts(floatArea, 18);
         setTimeout(() => spawnFloatingHearts(floatArea, 14), 700);
         setTimeout(() => spawnFloatingHearts(floatArea, 12), 1500);
         createSparkles(container);
         
-        // extra shake of joy
         const heartCard = document.querySelector('.card');
         if (heartCard) {
             heartCard.style.animation = 'none';
             setTimeout(() => heartCard.style.animation = 'floatGlow 3s infinite ease-in-out', 100);
         }
+        
+        currentResultMessage = "I LOVE YOU with all my heart! 💖✨ A beautiful romantic confession.";
+        currentResultType = "love";
+        currentEmotionText = "💖 My answer is YES! I'm ready to love and be loved. 💖";
     }
 
-    // Respectful message for "NO"
+    // Respect page
     function renderRespectPage() {
         const container = document.getElementById('resultContent');
         if (!container) return;
@@ -577,7 +737,6 @@
         wrapper.appendChild(extra);
         container.appendChild(wrapper);
 
-        // peaceful floating flowers & stars
         const peacefulArea = document.createElement('div');
         peacefulArea.style.position = 'relative';
         peacefulArea.style.height = '80px';
@@ -597,9 +756,12 @@
             setTimeout(() => particle.remove(), 2500);
         }
         container.appendChild(peacefulArea);
+        
+        currentResultMessage = "ITS OKAY. I ALWAYS RESPECT YOUR DECISION. 🌸 A graceful and kind response.";
+        currentResultType = "respect";
+        currentEmotionText = "💙 I chose respect and honesty. I value feelings. 💙";
     }
 
-    // handle final decision on page2
     function handleLoveFinal() {
         const decision = getLoveDecision();
         if (decision === null) {
@@ -611,14 +773,12 @@
             warn.style.borderRadius = '40px';
             warn.style.margin = '8px auto';
             warn.style.fontSize = '0.85rem';
-            warn.style.fontWeight = '500';
             const oldWarn = document.querySelector('.temp-warning');
             if (oldWarn) oldWarn.remove();
             page2.insertBefore(warn, page2.querySelector('.options').nextSibling);
             setTimeout(() => warn.remove(), 1900);
             return;
         }
-
         if (decision === 'yes') {
             renderLovePage();
         } else {
@@ -627,7 +787,6 @@
         showPage(3);
     }
 
-    // proceed from page1 to page2 only if single status = YES
     function goToPage2IfSingle() {
         const status = getSingleStatus();
         if (status === null) {
@@ -645,14 +804,11 @@
             setTimeout(() => warnDiv.remove(), 2000);
             return;
         }
-
         if (status === 'yes') {
-            // reset love checkboxes for fresh decision
             loveYes.checked = false;
             loveNo.checked = false;
             showPage(2);
         } else {
-            // polite message for "NO" single status, stay on page1
             const noMsg = document.createElement('div');
             noMsg.innerText = '🌸 Thanks for your honesty! This path is for singles, but you are always valued. 🌸';
             noMsg.style.background = 'rgba(0,0,0,0.55)';
@@ -661,7 +817,6 @@
             noMsg.style.padding = '10px 16px';
             noMsg.style.marginTop = '16px';
             noMsg.style.fontSize = '0.8rem';
-            noMsg.style.fontWeight = '500';
             noMsg.className = 'polite-no-msg';
             const existing = document.querySelector('.polite-no-msg');
             if (existing) existing.remove();
@@ -675,8 +830,9 @@
     decideLoveBtn.addEventListener('click', handleLoveFinal);
     resetFromPage2.addEventListener('click', fullReset);
     resetFromResult.addEventListener('click', fullReset);
+    if (shareResultBtn) shareResultBtn.addEventListener('click', handleShare);
+    if (shareToInboxBtn) shareToInboxBtn.addEventListener('click', shareToInbox);
 
-    // Mutual exclusivity for checkboxes
     function exclusiveGroup(a, b) {
         a.addEventListener('change', () => { if (a.checked) b.checked = false; });
         b.addEventListener('change', () => { if (b.checked) a.checked = false; });
@@ -684,7 +840,6 @@
     exclusiveGroup(singleYes, singleNo);
     exclusiveGroup(loveYes, loveNo);
 
-    // start clean
     fullReset();
 </script>
 </body>
