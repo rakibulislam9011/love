@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>If You Love Me | Share It My Inbox 💌 - RAKIBUL IT</title>
+    <title>If You Love Me | Share to Messenger 💌 - RAKIBUL IT</title>
     <style>
         * {
             margin: 0;
@@ -37,7 +37,7 @@
             }
         }
 
-        /* main glass card container - fully responsive */
+        /* main glass card container */
         .card {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(20px);
@@ -96,7 +96,6 @@
             flex-wrap: wrap;
         }
 
-        /* fancy touch-friendly labels */
         .choice-label {
             background: rgba(30, 20, 40, 0.75);
             backdrop-filter: blur(8px);
@@ -201,8 +200,8 @@
             transform: scale(0.97);
         }
 
-        .inbox-share-btn {
-            background: linear-gradient(95deg, #e94057, #8a2387);
+        .messenger-btn {
+            background: linear-gradient(95deg, #0084ff, #00c6ff);
             color: white;
             box-shadow: 0 6px 14px rgba(0,0,0,0.25);
         }
@@ -215,7 +214,6 @@
             margin-top: 10px;
         }
 
-        /* LOVE animation */
         .love-message {
             font-size: clamp(2rem, 10vw, 4rem);
             font-weight: 900;
@@ -264,7 +262,6 @@
             border-radius: 30px;
         }
 
-        /* floating hearts / particles */
         .heart-emoji {
             position: absolute;
             font-size: 1.6rem;
@@ -291,7 +288,6 @@
             overflow: hidden;
         }
 
-        /* Toast notification */
         .toast-message {
             position: fixed;
             bottom: 80px;
@@ -317,7 +313,6 @@
             100% { opacity: 0; transform: translateX(-50%) translateY(-10px); }
         }
 
-        /* Footer - RAKIBUL IT */
         .footer {
             position: fixed;
             bottom: 0;
@@ -355,12 +350,10 @@
             50%{ transform: scale(1.2); color: #ff6680; }
         }
 
-        /* prevent footer overlapping content */
         body {
             padding-bottom: 70px;
         }
 
-        /* mobile extra tuning */
         @media (max-width: 550px) {
             .card {
                 padding: 1.3rem 1.2rem;
@@ -399,7 +392,7 @@
 <body>
 
 <div class="card" id="appRoot">
-    <!-- PAGE 1: ARE YOU SINGLE? -->
+    <!-- PAGE 1 -->
     <div id="page1" class="active-page">
         <h1>✨ IF YOU LOVE ME ✨</h1>
         <div class="question">💖 ARE YOU SINGLE ? 💖</div>
@@ -416,7 +409,7 @@
         <div class="instruction" style="margin-top: 18px;">🌸 a magical journey awaits 🌸</div>
     </div>
 
-    <!-- PAGE 2: ARE YOU WANT TO LOVE ME? -->
+    <!-- PAGE 2 -->
     <div id="page2" class="hidden-page">
         <h1>🌹 Deeper Feelings 🌹</h1>
         <div class="question">💞 ARE YOU WANT TO LOVE ME? 💞</div>
@@ -433,22 +426,21 @@
         <button class="reset-btn" id="resetFromPage2">↺ Start Over</button>
     </div>
 
-    <!-- PAGE 3: FINAL RESULT (animated / respectful) -->
+    <!-- PAGE 3: RESULT + MESSENGER SHARE -->
     <div id="page3" class="hidden-page">
         <div id="resultContent"></div>
         <div class="button-group">
-            <button class="share-btn inbox-share-btn" id="shareToInboxBtn">📨 SHARE IT MY INBOX 💌</button>
+            <button class="share-btn messenger-btn" id="shareMessengerBtn">💬 SHARE TO MESSENGER INBOX 💬</button>
             <button class="share-btn" id="shareResultBtn">📤 Share Anywhere</button>
             <button class="reset-btn" id="resetFromResult">⟳ Begin Again</button>
         </div>
     </div>
 </div>
 
-<!-- FOOTER: PROJECT FROM RAKIBUL IT -->
 <div class="footer">
     <span class="highlight">✨ THIS PROJECT FROM RAKIBUL IT ✨</span> 
     <span class="heart-beat">❤️</span> 
-    <span style="opacity:0.9;">| if you love me, share it my inbox</span>
+    <span style="opacity:0.9;">| if you love me, share it to messenger inbox</span>
 </div>
 
 <script>
@@ -461,18 +453,16 @@
     const resetFromPage2 = document.getElementById('resetFromPage2');
     const resetFromResult = document.getElementById('resetFromResult');
     const shareResultBtn = document.getElementById('shareResultBtn');
-    const shareToInboxBtn = document.getElementById('shareToInboxBtn');
+    const shareMessengerBtn = document.getElementById('shareMessengerBtn');
     const singleYes = document.getElementById('singleYes');
     const singleNo = document.getElementById('singleNo');
     const loveYes = document.getElementById('loveYes');
     const loveNo = document.getElementById('loveNo');
 
-    // Store the current result message for sharing (dynamic)
     let currentResultMessage = "";
-    let currentResultType = ""; // 'love' or 'respect'
+    let currentResultType = "";
     let currentEmotionText = "";
 
-    // Helper: show toast notification
     function showToast(message, duration = 2500) {
         const existingToast = document.querySelector('.toast-message');
         if(existingToast) existingToast.remove();
@@ -485,7 +475,16 @@
         }, duration);
     }
 
-    // Share function using Web Share API or fallback
+    // Generic share fallback
+    function fallbackCopy(text) {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
     function shareContent(title, text, url) {
         if (navigator.share) {
             navigator.share({
@@ -500,54 +499,46 @@
             });
         } else {
             fallbackCopy(text);
-            showToast("📋 Copied to clipboard! You can now paste & send to RAKIBUL's inbox 💕");
+            showToast("📋 Copied to clipboard! You can now share it anywhere 💕");
         }
     }
 
-    function fallbackCopy(text) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-    }
-
-    // SPECIAL: Share to RAKIBUL's inbox (email + message)
-    function shareToInbox() {
+    // ========== MESSENGER INBOX SHARE (m.me link) ==========
+    // This creates a direct Facebook Messenger link that opens chat with a predefined user
+    // You can change the username to the desired recipient's messenger ID
+    function shareToMessengerInbox() {
         if (!currentResultMessage) {
             showToast("✨ Complete the journey first, then share your honest feeling ✨");
             return;
         }
         
-        let subject = "";
-        let body = "";
-        const userFeeling = currentResultType === 'love' ? "💖 I SAID YES! I LOVE YOU 💖" : "💙 My honest decision (Respect) 💙";
+        // Messenger username/ID - change this to the actual recipient's messenger username
+        // For RAKIBUL IT's inbox, you can set the Facebook username or page username
+        // Example: "rakibul.it" or "1000123456789" (user ID)
+        const messengerUsername = "rakibul.it";  // Replace with actual Messenger username/ID
+        
+        let messageText = "";
         
         if (currentResultType === 'love') {
-            subject = "💌 Love Confession via Heart Quest 💌";
-            body = `Hello RAKIBUL IT,\n\nI took the Heart Quest and my heart said:\n\n✨✨✨ I LOVE YOU ✨✨✨\n\n${currentEmotionText}\n\nThis is my honest feeling. 💖\n\nSent from "If You Love Me Share It My Inbox" — Made with love.`;
+            messageText = `💖💖💖 HEART QUEST RESULT 💖💖💖\n\n✨✨✨ I LOVE YOU ✨✨✨\n\n${currentEmotionText}\n\nThis is my honest feeling. 💖\n\nSent from "If You Love Me Share It To Messenger" — Made with love by RAKIBUL IT. 💌`;
         } else {
-            subject = "💙 Heartfelt Respect Message 💙";
-            body = `Hello RAKIBUL IT,\n\nI completed the Heart Quest with honesty.\n\nMy decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nI always respect true feelings. 🌸\n\nSent with kindness via "If You Love Me Share It My Inbox".`;
+            messageText = `💙💙💙 HEART QUEST RESULT 💙💙💙\n\nMy honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nI always respect true feelings. 🌸\n\nSent with kindness via "If You Love Me Share It To Messenger". 🤝`;
         }
         
-        // Create mailto link targeting RAKIBUL's inbox
-        const recipientEmail = "rakibul@example.com"; // placeholder - you can change to real email
-        // For realistic demonstration, we use a nice mailto: 
-        // But to make it functional, we use a default address that user can edit. 
-        // According to request: "share it my inbox" - we create email intent.
-        const mailtoLink = `mailto:rakibul.it.love@inbox.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        // Encode message for URL
+        const encodedMessage = encodeURIComponent(messageText);
         
-        // Try to open email client
-        window.location.href = mailtoLink;
-        showToast("💌 Opening your email client... Send your love to RAKIBUL's inbox! 💌", 3000);
+        // Create m.me link (opens Messenger chat)
+        // Using m.me with prefilled message (only works on mobile apps or web)
+        const messengerLink = `https://m.me/${messengerUsername}?text=${encodedMessage}`;
         
-        // Also copy to clipboard as backup
-        fallbackCopy(body);
-        setTimeout(() => {
-            showToast("❤️ Message also copied! Paste & send if needed.", 2000);
-        }, 1500);
+        // Open in new tab/window
+        window.open(messengerLink, '_blank');
+        
+        // Also copy message to clipboard as backup
+        fallbackCopy(messageText);
+        
+        showToast("💬 Opening Messenger... Message copied! Send your love to RAKIBUL's inbox 💬", 3500);
     }
 
     // Generic share handler
@@ -559,14 +550,13 @@
         let shareText = "";
         let shareTitle = "💖 My Heart Decision - If You Love Me 💖";
         if (currentResultType === 'love') {
-            shareText = `💗 My heart chose LOVE! 💗\n\n✨ I LOVE YOU ✨\n\n${currentEmotionText}\n\nMade with 💕 via RAKIBUL IT's Heart Quest\n\n"If you love me, share it my inbox"`;
+            shareText = `💗 My heart chose LOVE! 💗\n\n✨ I LOVE YOU ✨\n\n${currentEmotionText}\n\nMade with 💕 via RAKIBUL IT's Heart Quest\n\n"If you love me, share it to messenger inbox"`;
         } else {
             shareText = `💙 My honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nRespect & kindness always. 🌸\n\nCreated by RAKIBUL IT`;
         }
         shareContent(shareTitle, shareText, window.location.href);
     }
 
-    // Helper: switch pages
     function showPage(pageNum) {
         [page1, page2, page3].forEach(page => {
             page.classList.remove('active-page');
@@ -580,7 +570,6 @@
         target.classList.add('active-page');
     }
 
-    // full reset
     function fullReset() {
         singleYes.checked = false;
         singleNo.checked = false;
@@ -609,7 +598,6 @@
         return yes ? 'yes' : 'no';
     }
 
-    // floating hearts
     function spawnFloatingHearts(containerEl, count = 16) {
         if (!containerEl) return;
         const oldHearts = containerEl.querySelectorAll('.dynamic-heart');
@@ -655,7 +643,6 @@
         setTimeout(() => sparkContainer.remove(), 2000);
     }
 
-    // LOVE page
     function renderLovePage() {
         const container = document.getElementById('resultContent');
         if (!container) return;
@@ -704,7 +691,6 @@
         currentEmotionText = "💖 My answer is YES! I'm ready to love and be loved. 💖";
     }
 
-    // Respect page
     function renderRespectPage() {
         const container = document.getElementById('resultContent');
         if (!container) return;
@@ -831,7 +817,7 @@
     resetFromPage2.addEventListener('click', fullReset);
     resetFromResult.addEventListener('click', fullReset);
     if (shareResultBtn) shareResultBtn.addEventListener('click', handleShare);
-    if (shareToInboxBtn) shareToInboxBtn.addEventListener('click', shareToInbox);
+    if (shareMessengerBtn) shareMessengerBtn.addEventListener('click', shareToMessengerInbox);
 
     function exclusiveGroup(a, b) {
         a.addEventListener('change', () => { if (a.checked) b.checked = false; });
