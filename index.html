@@ -459,9 +459,9 @@
     const loveNo = document.getElementById('loveNo');
 
     // ========== YOUR MESSENGER LINK ==========
-    // Using the exact link you provided: https://www.facebook.com/share/197ZT2AVPS/
-    // This will open the Messenger chat with pre-filled message
-    const MESSENGER_URL = "https://www.facebook.com/share/197ZT2AVPS/";
+    // Using the exact m.me link you provided
+    const MESSENGER_LINK = "https://m.me/rakibul8340";
+    const MESSENGER_ACCOUNT_NAME = "rakibul8340";
     
     let currentResultMessage = "";
     let currentResultType = "";
@@ -507,7 +507,6 @@
     }
 
     // ========== MESSENGER INBOX SHARE ==========
-    // Opens the provided Facebook link (which leads to the inbox/chat)
     function shareToMessengerInbox() {
         if (!currentResultMessage) {
             showToast("✨ Complete the journey first, then share your honest feeling ✨");
@@ -517,30 +516,29 @@
         let messageText = "";
         
         if (currentResultType === 'love') {
-            messageText = `💖💖💖 HEART QUEST RESULT 💖💖💖\n\n✨✨✨ I LOVE YOU ✨✨✨\n\n${currentEmotionText}\n\nThis is my honest feeling. 💖\n\nSent from "If You Love Me Share It To Messenger" — Made with love by RAKIBUL IT. 💌`;
+            messageText = `💖💖💖 HEART QUEST RESULT 💖💖💖\n\n✨✨✨ I LOVE YOU ✨✨✨\n\n${currentEmotionText}\n\nThis is my honest feeling. 💖\n\nSent from "If You Love Me" to ${MESSENGER_ACCOUNT_NAME}'s inbox.\n\nMade with love by RAKIBUL IT. 💌`;
         } else {
-            messageText = `💙💙💙 HEART QUEST RESULT 💙💙💙\n\nMy honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nI always respect true feelings. 🌸\n\nSent with kindness via "If You Love Me Share It To Messenger". 🤝`;
+            messageText = `💙💙💙 HEART QUEST RESULT 💙💙💙\n\nMy honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nI always respect true feelings. 🌸\n\nSent with kindness to ${MESSENGER_ACCOUNT_NAME}'s inbox.\n\n- Via "If You Love Me" by RAKIBUL IT. 🤝`;
         }
         
         // Encode message for URL
         const encodedMessage = encodeURIComponent(messageText);
         
         // Create the messenger link with prefilled message
-        // Some Facebook Messenger links support the ?text= parameter
-        let messengerLink = MESSENGER_URL;
+        let messengerLink = MESSENGER_LINK;
         if (messengerLink.includes('?')) {
             messengerLink += `&text=${encodedMessage}`;
         } else {
             messengerLink += `?text=${encodedMessage}`;
         }
         
-        // Open in new tab
+        // Open messenger link in a new tab
         window.open(messengerLink, '_blank');
         
         // Also copy message to clipboard as backup
         fallbackCopy(messageText);
         
-        showToast("💬 Opening Messenger... Message copied! Send your love to the inbox 💬", 3500);
+        showToast(`💬 Opening Messenger for ${MESSENGER_ACCOUNT_NAME}... Message copied! Send your love to the inbox 💬`, 4000);
     }
 
     // Generic share handler
@@ -552,7 +550,7 @@
         let shareText = "";
         let shareTitle = "💖 My Heart Decision - If You Love Me 💖";
         if (currentResultType === 'love') {
-            shareText = `💗 My heart chose LOVE! 💗\n\n✨ I LOVE YOU ✨\n\n${currentEmotionText}\n\nMade with 💕 via RAKIBUL IT's Heart Quest\n\n"If you love me, share it to messenger inbox"`;
+            shareText = `💗 My heart chose LOVE! 💗\n\n✨ I LOVE YOU ✨\n\n${currentEmotionText}\n\nMade with 💕 via RAKIBUL IT's Heart Quest\n\n"If you love me, share it to ${MESSENGER_ACCOUNT_NAME}'s messenger inbox"`;
         } else {
             shareText = `💙 My honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nRespect & kindness always. 🌸\n\nCreated by RAKIBUL IT`;
         }
