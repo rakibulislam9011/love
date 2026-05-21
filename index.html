@@ -458,10 +458,31 @@
     const loveYes = document.getElementById('loveYes');
     const loveNo = document.getElementById('loveNo');
 
-    // ========== YOUR MESSENGER LINK ==========
-    // Using the exact m.me link you provided
+    // ========== YOUR MESSENGER DETAILS ==========
     const MESSENGER_LINK = "https://m.me/rakibul8340";
-    const MESSENGER_ACCOUNT_NAME = "rakibul8340";
+    const MESSENGER_USERNAME = "rakibul8340";
+    const WEBSITE_LINK = "https://rakibulislam9011.github.io/love/";
+    
+    // ========== CUSTOM MESSENGER INBOX MESSAGE ==========
+    const CUSTOM_LOVE_MESSAGE = `💗 My heart chose LOVE! 💗
+
+✨ I LOVE YOU ✨
+
+💖 My answer is YES! I'm ready to love and be loved. 💖
+
+Made with 💕 via RAKIBUL IT's Heart Quest
+
+"If you love me, share it to rakibul8340's messenger inbox" ${WEBSITE_LINK}`;
+
+    const CUSTOM_RESPECT_MESSAGE = `💙 My honest decision 💙
+
+I respect feelings and truth. 🌸
+
+ITS OKAY. I ALWAYS RESPECT YOUR DECISION.
+
+Sent with kindness to rakibul8340's messenger inbox.
+
+${WEBSITE_LINK}`;
     
     let currentResultMessage = "";
     let currentResultType = "";
@@ -506,7 +527,7 @@
         }
     }
 
-    // ========== MESSENGER INBOX SHARE ==========
+    // ========== MESSENGER INBOX SHARE WITH CUSTOM MESSAGE ==========
     function shareToMessengerInbox() {
         if (!currentResultMessage) {
             showToast("✨ Complete the journey first, then share your honest feeling ✨");
@@ -516,9 +537,9 @@
         let messageText = "";
         
         if (currentResultType === 'love') {
-            messageText = `💖💖💖 HEART QUEST RESULT 💖💖💖\n\n✨✨✨ I LOVE YOU ✨✨✨\n\n${currentEmotionText}\n\nThis is my honest feeling. 💖\n\nSent from "If You Love Me" to ${MESSENGER_ACCOUNT_NAME}'s inbox.\n\nMade with love by RAKIBUL IT. 💌`;
+            messageText = CUSTOM_LOVE_MESSAGE;
         } else {
-            messageText = `💙💙💙 HEART QUEST RESULT 💙💙💙\n\nMy honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nI always respect true feelings. 🌸\n\nSent with kindness to ${MESSENGER_ACCOUNT_NAME}'s inbox.\n\n- Via "If You Love Me" by RAKIBUL IT. 🤝`;
+            messageText = CUSTOM_RESPECT_MESSAGE;
         }
         
         // Encode message for URL
@@ -538,7 +559,7 @@
         // Also copy message to clipboard as backup
         fallbackCopy(messageText);
         
-        showToast(`💬 Opening Messenger for ${MESSENGER_ACCOUNT_NAME}... Message copied! Send your love to the inbox 💬`, 4000);
+        showToast(`💬 Opening Messenger for ${MESSENGER_USERNAME}... Message copied! Send your love to the inbox 💬`, 4000);
     }
 
     // Generic share handler
@@ -550,11 +571,11 @@
         let shareText = "";
         let shareTitle = "💖 My Heart Decision - If You Love Me 💖";
         if (currentResultType === 'love') {
-            shareText = `💗 My heart chose LOVE! 💗\n\n✨ I LOVE YOU ✨\n\n${currentEmotionText}\n\nMade with 💕 via RAKIBUL IT's Heart Quest\n\n"If you love me, share it to ${MESSENGER_ACCOUNT_NAME}'s messenger inbox"`;
+            shareText = CUSTOM_LOVE_MESSAGE;
         } else {
-            shareText = `💙 My honest decision: ${currentEmotionText}\n\n${currentResultMessage}\n\nRespect & kindness always. 🌸\n\nCreated by RAKIBUL IT`;
+            shareText = CUSTOM_RESPECT_MESSAGE;
         }
-        shareContent(shareTitle, shareText, window.location.href);
+        shareContent(shareTitle, shareText, WEBSITE_LINK);
     }
 
     function showPage(pageNum) {
@@ -686,7 +707,7 @@
             setTimeout(() => heartCard.style.animation = 'floatGlow 3s infinite ease-in-out', 100);
         }
         
-        currentResultMessage = "I LOVE YOU with all my heart! 💖✨ A beautiful romantic confession.";
+        currentResultMessage = CUSTOM_LOVE_MESSAGE;
         currentResultType = "love";
         currentEmotionText = "💖 My answer is YES! I'm ready to love and be loved. 💖";
     }
@@ -743,7 +764,7 @@
         }
         container.appendChild(peacefulArea);
         
-        currentResultMessage = "ITS OKAY. I ALWAYS RESPECT YOUR DECISION. 🌸 A graceful and kind response.";
+        currentResultMessage = CUSTOM_RESPECT_MESSAGE;
         currentResultType = "respect";
         currentEmotionText = "💙 I chose respect and honesty. I value feelings. 💙";
     }
