@@ -37,7 +37,6 @@
             }
         }
 
-        /* main glass card container */
         .card {
             background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(20px);
@@ -459,6 +458,11 @@
     const loveYes = document.getElementById('loveYes');
     const loveNo = document.getElementById('loveNo');
 
+    // ========== YOUR MESSENGER LINK ==========
+    // Using the exact link you provided: https://www.facebook.com/share/197ZT2AVPS/
+    // This will open the Messenger chat with pre-filled message
+    const MESSENGER_URL = "https://www.facebook.com/share/197ZT2AVPS/";
+    
     let currentResultMessage = "";
     let currentResultType = "";
     let currentEmotionText = "";
@@ -475,7 +479,6 @@
         }, duration);
     }
 
-    // Generic share fallback
     function fallbackCopy(text) {
         const textarea = document.createElement('textarea');
         textarea.value = text;
@@ -503,19 +506,13 @@
         }
     }
 
-    // ========== MESSENGER INBOX SHARE (m.me link) ==========
-    // This creates a direct Facebook Messenger link that opens chat with a predefined user
-    // You can change the username to the desired recipient's messenger ID
+    // ========== MESSENGER INBOX SHARE ==========
+    // Opens the provided Facebook link (which leads to the inbox/chat)
     function shareToMessengerInbox() {
         if (!currentResultMessage) {
             showToast("✨ Complete the journey first, then share your honest feeling ✨");
             return;
         }
-        
-        // Messenger username/ID - change this to the actual recipient's messenger username
-        // For RAKIBUL IT's inbox, you can set the Facebook username or page username
-        // Example: "rakibul.it" or "1000123456789" (user ID)
-        const messengerUsername = "rakibul.it";  // Replace with actual Messenger username/ID
         
         let messageText = "";
         
@@ -528,17 +525,22 @@
         // Encode message for URL
         const encodedMessage = encodeURIComponent(messageText);
         
-        // Create m.me link (opens Messenger chat)
-        // Using m.me with prefilled message (only works on mobile apps or web)
-        const messengerLink = `https://m.me/${messengerUsername}?text=${encodedMessage}`;
+        // Create the messenger link with prefilled message
+        // Some Facebook Messenger links support the ?text= parameter
+        let messengerLink = MESSENGER_URL;
+        if (messengerLink.includes('?')) {
+            messengerLink += `&text=${encodedMessage}`;
+        } else {
+            messengerLink += `?text=${encodedMessage}`;
+        }
         
-        // Open in new tab/window
+        // Open in new tab
         window.open(messengerLink, '_blank');
         
         // Also copy message to clipboard as backup
         fallbackCopy(messageText);
         
-        showToast("💬 Opening Messenger... Message copied! Send your love to RAKIBUL's inbox 💬", 3500);
+        showToast("💬 Opening Messenger... Message copied! Send your love to the inbox 💬", 3500);
     }
 
     // Generic share handler
