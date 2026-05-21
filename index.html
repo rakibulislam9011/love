@@ -425,7 +425,7 @@
         <button class="reset-btn" id="resetFromPage2">↺ Start Over</button>
     </div>
 
-    <!-- PAGE 3: RESULT + MESSENGER SHARE -->
+    <!-- PAGE 3: RESULT + SHARE OPTIONS -->
     <div id="page3" class="hidden-page">
         <div id="resultContent"></div>
         <div class="button-group">
@@ -459,11 +459,10 @@
     const loveNo = document.getElementById('loveNo');
 
     // ========== YOUR MESSENGER DETAILS ==========
-    const MESSENGER_LINK = "https://m.me/rakibul8340";
     const MESSENGER_USERNAME = "rakibul8340";
     const WEBSITE_LINK = "https://rakibulislam9011.github.io/love/";
     
-    // ========== CUSTOM MESSENGER INBOX MESSAGE ==========
+    // ========== CUSTOM SHARE MESSAGES ==========
     const CUSTOM_LOVE_MESSAGE = `💗 My heart chose LOVE! 💗
 
 ✨ I LOVE YOU ✨
@@ -507,75 +506,77 @@ ${WEBSITE_LINK}`;
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
+        showToast("📋 Copied to clipboard! You can now paste and send 💕", 2000);
     }
 
-    function shareContent(title, text, url) {
+    // ========== UNIVERSAL SHARE FUNCTION (Works exactly same for both buttons) ==========
+    function universalShare(shareText, shareTitle) {
+        if (!shareText) {
+            showToast("✨ Nothing to share yet! Complete the journey first ✨");
+            return false;
+        }
+        
+        // Try native Web Share API first (works on mobile and desktop with supported browsers)
         if (navigator.share) {
             navigator.share({
-                title: title,
-                text: text,
-                url: url,
+                title: shareTitle,
+                text: shareText,
+                url: WEBSITE_LINK,
             }).catch((err) => {
                 if (err.name !== 'AbortError') {
-                    showToast("✨ Copied to clipboard! ✨");
-                    fallbackCopy(text);
+                    // If share fails or user cancels, fallback to copy
+                    fallbackCopy(shareText);
                 }
             });
+            return true;
         } else {
-            fallbackCopy(text);
-            showToast("📋 Copied to clipboard! You can now share it anywhere 💕");
+            // Fallback: copy to clipboard
+            fallbackCopy(shareText);
+            return true;
         }
     }
 
-    // ========== MESSENGER INBOX SHARE WITH CUSTOM MESSAGE ==========
+    // ========== SHARE TO MESSENGER INBOX (Same as Share Anywhere) ==========
     function shareToMessengerInbox() {
         if (!currentResultMessage) {
             showToast("✨ Complete the journey first, then share your honest feeling ✨");
             return;
         }
         
-        let messageText = "";
+        let shareText = "";
+        let shareTitle = "";
         
         if (currentResultType === 'love') {
-            messageText = CUSTOM_LOVE_MESSAGE;
+            shareText = CUSTOM_LOVE_MESSAGE;
+            shareTitle = "💖 I LOVE YOU - Heart Decision 💖";
         } else {
-            messageText = CUSTOM_RESPECT_MESSAGE;
+            shareText = CUSTOM_RESPECT_MESSAGE;
+            shareTitle = "💙 My Honest Decision 💙";
         }
         
-        // Encode message for URL
-        const encodedMessage = encodeURIComponent(messageText);
-        
-        // Create the messenger link with prefilled message
-        let messengerLink = MESSENGER_LINK;
-        if (messengerLink.includes('?')) {
-            messengerLink += `&text=${encodedMessage}`;
-        } else {
-            messengerLink += `?text=${encodedMessage}`;
-        }
-        
-        // Open messenger link in a new tab
-        window.open(messengerLink, '_blank');
-        
-        // Also copy message to clipboard as backup
-        fallbackCopy(messageText);
-        
-        showToast(`💬 Opening Messenger for ${MESSENGER_USERNAME}... Message copied! Send your love to the inbox 💬`, 4000);
+        // Use the exact same universal share function as "Share Anywhere"
+        universalShare(shareText, shareTitle);
     }
 
-    // Generic share handler
-    function handleShare() {
+    // ========== SHARE ANYWHERE (Same function) ==========
+    function handleShareAnywhere() {
         if (!currentResultMessage) {
             showToast("✨ Nothing to share yet! Complete the journey first ✨");
             return;
         }
+        
         let shareText = "";
-        let shareTitle = "💖 My Heart Decision - If You Love Me 💖";
+        let shareTitle = "";
+        
         if (currentResultType === 'love') {
             shareText = CUSTOM_LOVE_MESSAGE;
+            shareTitle = "💖 I LOVE YOU - Heart Decision 💖";
         } else {
             shareText = CUSTOM_RESPECT_MESSAGE;
+            shareTitle = "💙 My Honest Decision 💙";
         }
-        shareContent(shareTitle, shareText, WEBSITE_LINK);
+        
+        universalShare(shareText, shareTitle);
     }
 
     function showPage(pageNum) {
@@ -832,12 +833,14 @@ ${WEBSITE_LINK}`;
         }
     }
 
-    // Event listeners
+    // Event listeners - Both buttons now use the same universal share function
     proceedBtn.addEventListener('click', goToPage2IfSingle);
     decideLoveBtn.addEventListener('click', handleLoveFinal);
     resetFromPage2.addEventListener('click', fullReset);
     resetFromResult.addEventListener('click', fullReset);
-    if (shareResultBtn) shareResultBtn.addEventListener('click', handleShare);
+    
+    // Both share buttons use the exact same sharing mechanism
+    if (shareResultBtn) shareResultBtn.addEventListener('click', handleShareAnywhere);
     if (shareMessengerBtn) shareMessengerBtn.addEventListener('click', shareToMessengerInbox);
 
     function exclusiveGroup(a, b) {
